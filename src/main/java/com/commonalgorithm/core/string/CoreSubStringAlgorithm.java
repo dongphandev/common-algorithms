@@ -11,6 +11,48 @@ import java.util.Set;
 
 public class CoreSubStringAlgorithm {
 
+	public static String longestDupSubstring(String s) {
+		HashMap<Character, Integer> map = new HashMap<Character, Integer>();
+		int currentValueMax = 0;
+		int start = -1;
+		int[] result = new int[s.length()];
+		result[0] = 0;
+		map.put(s.charAt(0), 0);
+		for (int i = 1; i < s.length(); i++) {
+			Integer indexOfPreviousChar = map.get(s.charAt(i));
+			if (indexOfPreviousChar == null) {
+				map.put(s.charAt(i), i);
+				result[i] = 0;
+				continue;
+			}
+			int pointer1 = i;
+			int pointer2 = indexOfPreviousChar;
+			while ((pointer1 - 1) >= 0 && (pointer2 - 1) >= 0 && s.charAt(pointer1 - 1) == s.charAt(pointer2 - 1)) {
+				pointer2--;
+				pointer1--;
+			}
+			if (i - pointer1 + 1 > result[indexOfPreviousChar]) {
+				result[i] = i - pointer1 + 1;
+				map.put(s.charAt(i), i);
+			} else {
+				result[i] = result[indexOfPreviousChar];
+				if (pointer2 >= 0) {
+
+				}
+			}
+
+			if (currentValueMax < result[i]) {
+				currentValueMax = result[i];
+				start = pointer1;
+			}
+		}
+		if (start == -1) {
+			return "";
+		}
+		return s.substring(start, start + currentValueMax);
+
+	}
+
 	public static int lengthOfLongestSubstringWithKDistinct(String s, int k) {
 		int result = 0;
 		HashMap<Character, Integer> map = new HashMap<Character, Integer>();
@@ -31,7 +73,7 @@ public class CoreSubStringAlgorithm {
 							map.remove(s.charAt(start));
 							start++;
 							break;
-						}else {
+						} else {
 							map.put(c, count);
 						}
 					}
@@ -300,13 +342,70 @@ public class CoreSubStringAlgorithm {
 		return result;
 	}
 
+	/**
+	 * 
+	 * @param s
+	 * @return
+	 */
+	public int numberOfSubstrings(String s) {
+		if (s.length() < 3) {
+			return 0;
+		}
+		int[] result = new int[s.length()];
+		int start = 0;
+		int i = 0;
+		int currentCount = 0;
+		int[] countChar = new int[3];
+		Arrays.fill(countChar, -1);
+		int countCharSofar = 0;
+		while ((i < s.length()) && (countCharSofar < 3)) {
+			char c = s.charAt(i);
+			if (countChar[c - 97] == -1) {
+				countChar[c - 97] = 1;
+				countCharSofar++;
+				if (countCharSofar == 3) {
+					for (; start <= i; start++) {
+						currentCount++;
+						if ((countChar[s.charAt(start) - 97] - 1) > 0) {
+							countChar[s.charAt(start) - 97]--;
+						} else {
+							break;
+						}
+					}
+				}
+			} else {
+				countChar[c - 97]++;
+			}
+			result[i++] = currentCount;
+		}
+		for (; i < s.length(); i++) {
+			countChar[s.charAt(i) - 97]++;
+			currentCount = 0;
+			while (start < i) {
+				if ((countChar[s.charAt(start) - 97] - 1) > 0) {
+					currentCount++;
+					countChar[s.charAt(start) - 97]--;
+				} else {
+					break;
+				}
+				start++;
+			}
+			result[i] = result[i - 1] + (result[i - 1] - result[i - 2] + currentCount);
+		}
+		return result[s.length() - 1];
+	}
+
+	public int longestSubstring(String s, int k) {
+
+		
+		return k;
+
+	}
+
 	public static void main(String[] args) {
-		String s1 = "a";
-		String t1 = "b";
-		Integer x =  2147483640;
-		Integer y =  2147483630;
-		Integer z = x+y;
-		System.out.println(z);
+		String s = "aabbaa";
+
+		System.out.println(longestDupSubstring(s));
 	}
 
 }
